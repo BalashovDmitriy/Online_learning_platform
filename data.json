@@ -10,7 +10,7 @@
       "last_name": "",
       "is_staff": false,
       "is_active": true,
-      "date_joined": "2023-10-26T02:56:32.290Z",
+      "date_joined": "2023-05-26T02:56:32.290Z",
       "email": "reaver_std@mail.ru",
       "phone": null,
       "city": null,
@@ -30,7 +30,7 @@
       "last_name": "",
       "is_staff": false,
       "is_active": true,
-      "date_joined": "2023-10-26T02:56:45.075Z",
+      "date_joined": "2023-06-26T02:56:45.075Z",
       "email": "riv74x@gmail.com",
       "phone": null,
       "city": null,
@@ -45,7 +45,7 @@
     "fields": {
       "user": 1,
       "course": 3,
-      "payment_date": "2023-10-26T02:57:21.892Z",
+      "payment_date": "2023-06-26T02:57:21.892Z",
       "payment_sum": 1000,
       "payment_method": "1"
     }
@@ -56,7 +56,7 @@
     "fields": {
       "user": 1,
       "course": 4,
-      "payment_date": "2023-10-26T02:57:33.931Z",
+      "payment_date": "2023-07-26T02:57:33.931Z",
       "payment_sum": 2000,
       "payment_method": "1"
     }
@@ -67,7 +67,7 @@
     "fields": {
       "user": 2,
       "course": 4,
-      "payment_date": "2023-10-26T02:57:41.901Z",
+      "payment_date": "2023-08-26T02:57:41.901Z",
       "payment_sum": 2000,
       "payment_method": "2"
     }
