@@ -4,9 +4,15 @@ from education.serializers import PaymentSerializer
 from users.models import User
 
 
-class UserDetailSerializer(serializers.ModelSerializer):
+class UserRetrieveSerializer(serializers.ModelSerializer):
     payments = PaymentSerializer(source='user_payments', many=True)
 
     class Meta:
         model = User
-        fields = ('email', 'payments')
+        fields = ('email', 'payments', 'phone', 'city', 'avatar')
+
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('phone', 'city', 'avatar')
