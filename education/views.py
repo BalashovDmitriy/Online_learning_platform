@@ -2,15 +2,25 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.filters import OrderingFilter
 from rest_framework import viewsets, generics
+from rest_framework.permissions import IsAuthenticated
 
 from education.models import Course, Lesson, Payment
-from education.permissions import IsNotStaffUser
+from education.permissions import IsNotStaffUser, IsOwnerOrStaffUser
 from education.serializers import LessonSerializer, CourseDetailSerializer, PaymentListSerializer
 
 
 class CourseViewSet(viewsets.ModelViewSet):
     serializer_class = CourseDetailSerializer
     queryset = Course.objects.all()
+    permission_classes = [IsAuthenticated, IsOwnerOrStaffUser]
+
+    def get_queryset(self):
+        if not self.request.user.is_staff:
+            return Course.objects.filter(owner=self.request.user)
+        elif self.request.user.is_staff:
+            return Course.objects.all()
+        else:
+            raise PermissionDenied
 
     def create(self, request, *args, **kwargs):
         if request.user.is_staff:
@@ -36,17 +46,26 @@ class LessonCreateAPIView(generics.CreateAPIView):
 
 class LessonListAPIView(generics.ListCreateAPIView):
     serializer_class = LessonSerializer
-    queryset = Lesson.objects.all()
+
+    def get_queryset(self):
+        if not self.request.user.is_staff:
+            return Lesson.objects.filter(owner=self.request.user)
+        elif self.request.user.is_staff:
+            return Lesson.objects.all()
+        else:
+            raise PermissionDenied
 
 
 class LessonRetrieveAPIView(generics.RetrieveAPIView):
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
+    permission_classes = [IsOwnerOrStaffUser]
 
 
 class LessonUpdateAPIView(generics.UpdateAPIView):
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
+    permission_classes = [IsOwnerOrStaffUser]
 
 
 class LessonDestroyAPIView(generics.DestroyAPIView):
