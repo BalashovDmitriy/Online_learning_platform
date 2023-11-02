@@ -1,7 +1,7 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.filters import OrderingFilter
-from rest_framework import viewsets, generics
+from rest_framework import viewsets, generics, serializers
 from rest_framework.permissions import IsAuthenticated
 
 from education.models import Course, Lesson, Payment, Subscription
@@ -86,6 +86,14 @@ class PaymentListAPIView(generics.ListAPIView):
 class SubscriptionCreateAPIView(generics.CreateAPIView):
     serializer_class = SubscriptionSerializer
     permission_classes = [IsNotStaffUser]
+
+    def create(self, request, *args, **kwargs):
+        for subscription in Subscription.objects.filter(user=self.request.user):
+            if subscription.course.id == request.data.get('course'):
+                raise PermissionDenied('У вас уже есть подписка на этот курс.')
+        if self.request.user.id != request.data.get('user'):
+            raise PermissionDenied('Нельзя оформлять подписки на другого пользователя.')
+        return super().create(request, *args, **kwargs)
 
 
 class SubscriptionListAPIView(generics.ListAPIView):

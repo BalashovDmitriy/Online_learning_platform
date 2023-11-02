@@ -67,4 +67,4 @@ class SubscriptionListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Subscription
-        fields = ('user', 'course')
+        fields = ('id', 'user', 'course')
