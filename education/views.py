@@ -1,10 +1,11 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.filters import OrderingFilter
-from rest_framework import viewsets, generics
+from rest_framework import viewsets, generics, serializers
 from rest_framework.permissions import IsAuthenticated
 
 from education.models import Course, Lesson, Payment, Subscription
+from education.paginators import Paginator
 from education.permissions import IsNotStaffUser, IsOwnerOrStaffUser
 from education.serializers import LessonSerializer, CourseDetailSerializer, PaymentListSerializer, \
     SubscriptionSerializer, SubscriptionListSerializer
@@ -14,6 +15,7 @@ class CourseViewSet(viewsets.ModelViewSet):
     serializer_class = CourseDetailSerializer
     queryset = Course.objects.all()
     permission_classes = [IsAuthenticated, IsOwnerOrStaffUser]
+    pagination_class = Paginator
 
     def get_queryset(self):
         if not self.request.user.is_staff:
@@ -47,6 +49,7 @@ class LessonCreateAPIView(generics.CreateAPIView):
 
 class LessonListAPIView(generics.ListCreateAPIView):
     serializer_class = LessonSerializer
+    pagination_class = Paginator
 
     def get_queryset(self):
         if not self.request.user.is_staff:
@@ -86,6 +89,14 @@ class PaymentListAPIView(generics.ListAPIView):
 class SubscriptionCreateAPIView(generics.CreateAPIView):
     serializer_class = SubscriptionSerializer
     permission_classes = [IsNotStaffUser]
+
+    def create(self, request, *args, **kwargs):
+        for subscription in Subscription.objects.filter(user=self.request.user):
+            if subscription.course.id == request.data.get('course'):
+                raise PermissionDenied('У вас уже есть подписка на этот курс.')
+        if self.request.user.id != request.data.get('user'):
+            raise PermissionDenied('Нельзя оформлять подписки на другого пользователя.')
+        return super().create(request, *args, **kwargs)
 
 
 class SubscriptionListAPIView(generics.ListAPIView):

@@ -1,3 +1,10 @@
 from django.contrib import admin
 
-# Register your models here.
+from education.models import Course, Lesson, Payment, Subscription
+from users.models import User
+
+admin.site.register(Course)
+admin.site.register(Lesson)
+admin.site.register(Payment)
+admin.site.register(Subscription)
+admin.site.register(User)
