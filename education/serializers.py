@@ -46,7 +46,7 @@ class LessonSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Lesson
-        fields = ('title', 'description', 'image', 'link', 'course')
+        fields = ('id', 'title', 'description', 'image', 'link', 'course')
 
 
 class PaymentListSerializer(serializers.ModelSerializer):
