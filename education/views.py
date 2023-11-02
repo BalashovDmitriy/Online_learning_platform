@@ -4,9 +4,10 @@ from rest_framework.filters import OrderingFilter
 from rest_framework import viewsets, generics
 from rest_framework.permissions import IsAuthenticated
 
-from education.models import Course, Lesson, Payment
+from education.models import Course, Lesson, Payment, Subscription
 from education.permissions import IsNotStaffUser, IsOwnerOrStaffUser
-from education.serializers import LessonSerializer, CourseDetailSerializer, PaymentListSerializer
+from education.serializers import LessonSerializer, CourseDetailSerializer, PaymentListSerializer, \
+    SubscriptionSerializer, SubscriptionListSerializer
 
 
 class CourseViewSet(viewsets.ModelViewSet):
@@ -80,3 +81,23 @@ class PaymentListAPIView(generics.ListAPIView):
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     filterset_fields = ('course', 'payment_method')
     ordering_fields = ('payment_date',)
+
+
+class SubscriptionCreateAPIView(generics.CreateAPIView):
+    serializer_class = SubscriptionSerializer
+    permission_classes = [IsNotStaffUser]
+
+
+class SubscriptionListAPIView(generics.ListAPIView):
+    serializer_class = SubscriptionListSerializer
+
+    def get_queryset(self):
+        return Subscription.objects.filter(user=self.request.user)
+
+
+class SubscriptionDestroyAPIView(generics.DestroyAPIView):
+    serializer_class = SubscriptionSerializer
+    permission_classes = [IsNotStaffUser]
+
+    def get_queryset(self):
+        return Subscription.objects.filter(user=self.request.user)
