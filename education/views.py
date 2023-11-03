@@ -1,7 +1,8 @@
 from django_filters.rest_framework import DjangoFilterBackend
+
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.filters import OrderingFilter
-from rest_framework import viewsets, generics, serializers
+from rest_framework import viewsets, generics
 from rest_framework.permissions import IsAuthenticated
 
 from education.models import Course, Lesson, Payment, Subscription
@@ -9,6 +10,7 @@ from education.paginators import Paginator
 from education.permissions import IsNotStaffUser, IsOwnerOrStaffUser
 from education.serializers import LessonSerializer, CourseDetailSerializer, PaymentListSerializer, \
     SubscriptionSerializer, SubscriptionListSerializer
+from education.services import subscriptions_mailing
 
 
 class CourseViewSet(viewsets.ModelViewSet):
@@ -37,6 +39,10 @@ class CourseViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+
+    def perform_update(self, serializer):
+        serializer.save(owner=self.request.user)
+        subscriptions_mailing(serializer)
 
 
 class LessonCreateAPIView(generics.CreateAPIView):
