@@ -87,7 +87,7 @@ class LessonsAPITestCase(APITestCase):
             'course': self.course,
         }
         response = self.client.put(reverse('lesson-update', args=[self.lesson.id]), data=data)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json(),
                          {'id': self.lesson.id,
                           'title': data['title'],
