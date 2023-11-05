@@ -51,6 +51,7 @@ class LessonCreateAPIView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+        subscriptions_mailing(serializer)
 
 
 class LessonListAPIView(generics.ListCreateAPIView):
