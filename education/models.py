@@ -8,6 +8,7 @@ class Course(models.Model):
     description = models.TextField(verbose_name='Описание курса', **NULLABLE)
     image = models.ImageField(upload_to='courses/', verbose_name='Изображение курса', **NULLABLE)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, **NULLABLE)
+    price = models.PositiveIntegerField(default=1000, verbose_name='Стоимость курса')
 
     def __str__(self):
         return self.title
@@ -34,11 +35,12 @@ class Lesson(models.Model):
 
 
 class Payment(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_payments')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_payments', **NULLABLE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='course_payments')
     payment_date = models.DateTimeField(auto_now_add=True, verbose_name='Дата платежа')
-    payment_sum = models.PositiveIntegerField(verbose_name='Сумма платежа')
-    payment_method = models.CharField(choices=[('1', 'Наличные'), ('2', 'Перевод')], verbose_name='Метод платежа')
+    payment_method = models.CharField(choices=[('1', 'Наличные'), ('2', 'Безнал')], verbose_name='Метод платежа')
+    is_successful = models.BooleanField(default=False, verbose_name='Статус платежа')
+    session = models.CharField(max_length=150, verbose_name='Сессия для оплаты', **NULLABLE)
 
     def __str__(self):
         return f"{self.user}: {self.course} - {self.payment_date}"

@@ -11,6 +11,15 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class SubscriptionListSerializer(serializers.ModelSerializer):
+    user = serializers.SlugRelatedField(slug_field='email', queryset=User.objects.all())
+    course = serializers.SlugRelatedField(slug_field='title', queryset=Course.objects.all())
+
+    class Meta:
+        model = Subscription
+        fields = ('id', 'user', 'course')
+
+
 class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
@@ -49,22 +58,21 @@ class LessonSerializer(serializers.ModelSerializer):
         fields = ('id', 'title', 'description', 'image', 'link', 'course')
 
 
-class PaymentListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Payment
-        fields = ('user', 'course', 'payment_date', 'payment_sum', 'payment_method')
-
-
 class PaymentSerializer(serializers.ModelSerializer):
+    payment_method = serializers.SerializerMethodField()
+
+    def get_payment_method(self, obj):
+        if obj.payment_method == '1':
+            return "Наличные"
+        elif obj.payment_method == '2':
+            return "Безнал"
+
     class Meta:
         model = Payment
-        fields = ('course', 'payment_date', 'payment_sum', 'payment_method')
+        fields = ('id', 'user', 'course', 'payment_date', 'payment_method', 'session', 'is_successful')
 
 
-class SubscriptionListSerializer(serializers.ModelSerializer):
-    user = serializers.SlugRelatedField(slug_field='email', queryset=User.objects.all())
-    course = serializers.SlugRelatedField(slug_field='title', queryset=Course.objects.all())
-
+class PaymentCreateSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Subscription
-        fields = ('id', 'user', 'course')
+        model = Payment
+        fields = ('course', 'payment_method')
