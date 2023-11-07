@@ -3,7 +3,7 @@ from rest_framework import routers
 
 from education.views import CourseViewSet, LessonCreateAPIView, LessonListAPIView, LessonRetrieveAPIView, \
     LessonUpdateAPIView, LessonDestroyAPIView, PaymentListAPIView, SubscriptionDestroyAPIView, SubscriptionListAPIView, \
-    SubscriptionCreateAPIView
+    SubscriptionCreateAPIView, PaymentCreateAPIView, PaymentRetrieveAPIView, PaymentDestroyAPIView
 
 urlpatterns = [
     # lessons
@@ -15,6 +15,9 @@ urlpatterns = [
 
     # payments
     path('payments/', PaymentListAPIView.as_view(), name='payment-list'),
+    path('payments/create/', PaymentCreateAPIView.as_view(), name='payment-create'),
+    path('payments/<int:pk>/', PaymentRetrieveAPIView.as_view(), name='payment-detail'),
+    path('payments/<int:pk>/delete/', PaymentDestroyAPIView.as_view(), name='payment-delete'),
 
     # subscriptions
     path('subscriptions/create/', SubscriptionCreateAPIView.as_view(), name='subscription-create'),

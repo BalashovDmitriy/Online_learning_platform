@@ -171,3 +171,5 @@ SWAGGER_SETTINGS = {
         },
     },
 }
+
+STRIPE_SECRET_KEY = getenv('STRIPE_SECRET_KEY')
