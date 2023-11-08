@@ -159,7 +159,6 @@ class CoursesAPITestCase(APITestCase):
     def test_course_list(self):
         """ Проверка списка курсов """
         response = self.client.get('/course/')
-        print(response.json())
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json(),
                          {'count': 1,
@@ -252,7 +251,6 @@ class PaymentAPITestCase(APITestCase):
     def test_payment_list(self):
         """ Проверка списка оплат """
         response = self.client.get(reverse('payment-list'))
-        print(response.json())
         tz = pytz.timezone(settings.TIME_ZONE)
         self.payment.payment_date = self.payment.payment_date.astimezone(tz)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
