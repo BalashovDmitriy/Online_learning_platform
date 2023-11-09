@@ -11,8 +11,8 @@ from education.paginators import Paginator
 from education.permissions import IsNotStaffUser, IsOwnerOrStaffUser
 from education.serializers import LessonSerializer, CourseDetailSerializer, SubscriptionSerializer, \
     SubscriptionListSerializer, PaymentCreateSerializer, PaymentSerializer
-from education.services import subscriptions_update_course_mailing, subscriptions_lesson_mailing, \
-    subscriptions_create_lesson_mailing, get_session, retrieve_session
+from education.services import subscriptions_lesson_mailing, \
+    subscriptions_create_lesson_mailing, get_session, retrieve_session, subscriptions_update_course_mailing
 
 
 class CourseViewSet(viewsets.ModelViewSet):
@@ -43,8 +43,8 @@ class CourseViewSet(viewsets.ModelViewSet):
         serializer.save(owner=self.request.user)
 
     def perform_update(self, serializer):
-        serializer.save(owner=self.request.user)
-        subscriptions_update_course_mailing(serializer)
+        course_id = serializer.save(owner=self.request.user).id
+        subscriptions_update_course_mailing.delay(course_id)
 
 
 class LessonCreateAPIView(generics.CreateAPIView):
@@ -52,8 +52,9 @@ class LessonCreateAPIView(generics.CreateAPIView):
     permission_classes = [IsNotStaffUser]
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
-        subscriptions_create_lesson_mailing(serializer)
+        course_id = serializer.save(owner=self.request.user).course.id
+        lesson_id = serializer.save().id
+        subscriptions_create_lesson_mailing.delay(course_id, lesson_id)
 
 
 class LessonListAPIView(generics.ListCreateAPIView):
@@ -81,8 +82,9 @@ class LessonUpdateAPIView(generics.UpdateAPIView):
     permission_classes = [IsOwnerOrStaffUser]
 
     def perform_update(self, serializer):
-        subscriptions_lesson_mailing(serializer)
-        serializer.save()
+        course_id = serializer.save().course.id
+        lesson_id = serializer.save().id
+        subscriptions_lesson_mailing.delay(course_id, lesson_id)
 
 
 class LessonDestroyAPIView(generics.DestroyAPIView):
